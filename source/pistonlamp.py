@@ -1,3 +1,4 @@
+from __future__ import division
 from neopixel import *
 from enum import Enum
 
@@ -31,7 +32,7 @@ class PistonLamp:
         self.g = 0
         self.b = 0
         self.w = 0
-        self.update_state(State.W_ON)
+        self.update_state(State.W_ON, None, None, None, 100)
 
     def init_buffer(self):
         for i in range (0, LED_COUNT):
@@ -42,6 +43,7 @@ class PistonLamp:
 
     def update_state(self, state, r=None, g=None, b=None, w=None):
         self.state = state
+        if w: self.w = w
         if self.state == State.ALL_OFF:
             for i in range(0, LED_COUNT):
                 self.buffer[i][0] = 0
@@ -53,8 +55,15 @@ class PistonLamp:
                 self.buffer[i][0] = 0
                 self.buffer[i][1] = 0
                 self.buffer[i][2] = 0
-                self.buffer[i][3] = 255
+                self.buffer[i][3] = int(255*(self.w/100))
         self.write_buffer()
+
+    def get_brightness(self):
+        return max([self.r, self.g, self.b, self.w])
+
+    def update_brightness(self, brightness):
+        """Assumes just white brightness."""
+        self.update_state(self.state, None, None, None, brightness)
 
     def write_buffer(self):
         for i in range(0, LED_COUNT):

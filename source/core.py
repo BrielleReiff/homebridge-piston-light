@@ -7,26 +7,35 @@ name='world'
 pl = PistonLamp()
 app = Flask(__name__)
 
-@app.route('/api/control', methods = ['POST'])
-def post():
-    print "Calling post endpoint..."
+@app.route('/api/control/power', methods = ['POST'])
+def power_control():
     data = request.json
     print data
-    command = data['targetState']
-    if command == State.W_ON:
-        pl.update_state(State.W_ON)
-    elif command == State.ALL_OFF:
-        pl.update_state(State.ALL_OFF)
+    pl.update_state(data['targetState'])
     return "Done"
 
-@app.route('/api/status', methods = ['GET'])
-def get():
-    print "Calling status endpoint..."
+@app.route('/api/status/power', methods = ['GET'])
+def power_status():
     response = {}
     if pl.get_state():
-        response["currentState"] = True 
+        response["currentState"] = True
     else:
         response["currentState"] = False
+
+    response = jsonify(response)
+    return response
+
+@app.route('/api/control/brightness', methods = ['POST'])
+def brightness_control():
+    data = request.json
+    print data
+    pl.update_brightness(data['brightness'])
+    return "Done"
+
+@app.route('/api/status/brightness', methods = ['GET'])
+def brightness_status():
+    response = {}
+    response["brightness"] = pl.get_brightness()
 
     response = jsonify(response)
     return response
