@@ -32,6 +32,10 @@ class PistonLamp:
         self.g = 0
         self.b = 0
         self.w = 0
+        self.brightness = 0
+        self.hue = 0
+        self.saturation = 0
+        self.color_temperature = 0
         self.update_state(State.W_ON, None, None, None, 100)
 
     def init_buffer(self):
@@ -43,7 +47,7 @@ class PistonLamp:
 
     def update_state(self, state, r=None, g=None, b=None, w=None):
         self.state = state
-        if w: self.w = w
+        if w: self.w = w; self.brightness = w
         if self.state == State.ALL_OFF:
             for i in range(0, LED_COUNT):
                 self.buffer[i][0] = 0
@@ -59,11 +63,30 @@ class PistonLamp:
         self.write_buffer()
 
     def get_brightness(self):
-        return max([self.r, self.g, self.b, self.w])
+        return self.brightness
 
     def update_brightness(self, brightness):
         """Assumes just white brightness."""
+        self.brightness = brightness
         self.update_state(self.state, None, None, None, brightness)
+
+    def get_hue(self):
+        return self.hue
+
+    def update_hue(self, hue):
+        self.hue = hue
+
+    def get_saturation(self):
+        return self.saturation
+
+    def update_saturation(self, saturation):
+        self.saturation = saturation
+
+    def get_color_temperature(self):
+        return self.color_temperature
+
+    def update_color_temperature(self, color_tempature):
+        self.color_temperature = color_temperature
 
     def write_buffer(self):
         for i in range(0, LED_COUNT):
